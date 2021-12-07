@@ -26,7 +26,7 @@ class TradeRecord:
     timestamp = ""
 
     """构造方法"""
-    def __init__(self, id, stock_code, stock_name, detail, trade_price, trade_amount, timestamp):
+    def __init__(self, id, stock_code, stock_name=None, detail=None, trade_price=None, trade_amount=None, timestamp=None):
         self.id = id
         self.stock_code = stock_code
         self.stock_name = stock_name

@@ -11,7 +11,7 @@ class TradeRecord:
     stock_name = ""
 
     """构造方法"""
-    def __init__(self,stock_code, stock_name):
+    def __init__(self,stock_code, stock_name=None):
         self.stock_code = stock_code
         self.stock_name = stock_name
 

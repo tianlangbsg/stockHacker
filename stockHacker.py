@@ -66,7 +66,7 @@ def get_top_real_and_save():
         return
     refreshTopTime = datetime.datetime.now()
     tempDict = quotation.get_stock_data(stockRank100List)
-    log.info('Top100行情API获取耗时:' + format((datetime.datetime.now() - refreshTopTime).total_seconds(), '.3f') + 'S')
+    # log.info('Top100行情API获取耗时:' + format((datetime.datetime.now() - refreshTopTime).total_seconds(), '.3f') + 'S')
     stockRank100Dict.clear()
     # 获取最新top100分时价格数据
     for key in tempDict.keys():
@@ -122,11 +122,11 @@ def refresh_real_info(stockCodeListList):
             refreshTime = datetime.datetime.now()
             # 更新数据键值对
             get_all_real_and_save(stockCodeListList)
-            log.info('全行情API获取耗时' + format((datetime.datetime.now() - refreshTime).total_seconds(), '.3f') + 'S')
+            # log.info('全行情API获取耗时' + format((datetime.datetime.now() - refreshTime).total_seconds(), '.3f') + 'S')
             sort_stock_rank100()
             log.info('全行情刷新耗时' + format((datetime.datetime.now() - refreshTime).total_seconds(), '.3f') + 'S')
             refreshTime = datetime.datetime.now()
-            time.sleep(10)
+            time.sleep(60)
         except Exception as e:
             log.info('全行情刷新失败:' + e)
 
@@ -150,7 +150,7 @@ def select_target_from_top100():
     global candidateList
     while True:
         try:
-            time.sleep(3)
+            time.sleep(2)
             for key in stockRank100Dict.keys():
 
                 # 取出单只股票实时数据
@@ -177,15 +177,17 @@ def select_target_from_top100():
                 # if not stockUtil.has_reached_high_limit(stockData):
                 #     continue
 
-                # 添加到候选股票池
+                # #################################################################################
                 alternativeStock = candidateList[key] = stockRank100Dict[key]
+                # 添加到候选股票池
                 log.info('选中股票:' + key)
                 log.info('实时数据:' + str(candidateList[key]))
+                # 添加到候选股票池
                 alternativeStockPool = AlternativeStockPool(
                     stock_code=alternativeStock["code"],
-                    stock_name=alternativeStock["stock_name"],
-                    # buy=alternativeStock["buy"],
-                    # sell=alternativeStock["sell"],
+                    stock_name=alternativeStock["name"],
+                    buy=None,
+                    sell=None,
                     now=alternativeStock["now"],
                     open=alternativeStock["open"],
                     close=alternativeStock["close"],
@@ -214,9 +216,12 @@ def select_target_from_top100():
                     bid5=alternativeStock["bid5"],
                     bid5_volume=alternativeStock["bid5_volume"],
                     date=datetime.datetime.now().strftime('%Y%m%d'),
+                    time=alternativeStock["datetime"],
                     timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
                 )
                 result = alternativeStockPoolService.insert(alternativeStockPool)
+                log.info('result = ' + str(result))
+                # #################################################################################
             log.info('********************************************************************')
             log.info(candidateList.keys())
             log.info('********************************************************************')
@@ -239,14 +244,12 @@ today = now.strftime('%Y%m%d')
 delta = datetime.timedelta(days=1)
 yesterday = (now - delta).strftime('%Y%m%d')
 
-# yesterday = '20211126'
-
 # 查询当前所有正常上市交易的股票列表ig507
 stockCodeList = ig507Util.get_main_stock_list_from_ig507()
 
 # 取得所有主板股票上个交易日的信息，并保存到stockHistoryDict
 # #####################
-# yesterday = '20211014'
+yesterday = '20211203'
 # #####################
 log.info("初始化上个交易日数据...")
 stockHistoryDict = stockUtil.get_history_1(yesterday)
@@ -280,63 +283,23 @@ log.info("初始化今日Top100行情...")
 get_top_real_and_save()
 log.info("今日Top100行情初始化完成!")
 
-# # 启动全行情刷新线程
-# log.info("启动全行情刷新线程...")
-# refreshRealThread = threading.Thread(target=refresh_real_info, args=(stockCodeListList,))
-# refreshRealThread.start()
-#
-# # 启动top100行情刷新线程
-# log.info("启动top100行情刷新线程...")
-# refreshTop100Thread = threading.Thread(target=refresh_top100_info)
-# refreshTop100Thread.start()
+# 启动全行情刷新线程
+log.info("启动全行情刷新线程...")
+refreshRealThread = threading.Thread(target=refresh_real_info, args=(stockCodeListList,))
+refreshRealThread.start()
+
+# 启动top100行情刷新线程
+log.info("启动top100行情刷新线程...")
+refreshTop100Thread = threading.Thread(target=refresh_top100_info)
+refreshTop100Thread.start()
 
 # 启动top100选择操作目标线程
-# time.sleep(5)  # 等待实时数据初始化完成
-# log.info("启动top100选择操作目标线程...")
-# selectTargetThread = threading.Thread(target=select_target_from_top100())
-# selectTargetThread.start()
+time.sleep(5)  # 等待实时数据初始化完成
+log.info("启动top100选择操作目标线程...")
+selectTargetThread = threading.Thread(target=select_target_from_top100())
+selectTargetThread.start()
 
-# #################################################################################
-# 添加到候选股票池
-alternativeStock =stockRank100Dict["600018"]
-alternativeStockPool = AlternativeStockPool(
-stock_code=alternativeStock["code"],
-stock_name=alternativeStock["name"],
-buy=None,
-sell=None,
-now=alternativeStock["now"],
-open=alternativeStock["open"],
-close=alternativeStock["close"],
-high=alternativeStock["high"],
-low=alternativeStock["low"],
-turnover=alternativeStock["turnover"],
-volume=alternativeStock["volume"],
-ask1=alternativeStock["ask1"],
-ask1_volume=alternativeStock["ask1_volume"],
-ask2=alternativeStock["ask2"],
-ask2_volume=alternativeStock["ask2_volume"],
-ask3=alternativeStock["ask3"],
-ask3_volume=alternativeStock["ask3_volume"],
-ask4=alternativeStock["ask4"],
-ask4_volume=alternativeStock["ask4_volume"],
-ask5=alternativeStock["ask5"],
-ask5_volume=alternativeStock["ask5_volume"],
-bid1=alternativeStock["bid1"],
-bid1_volume=alternativeStock["bid1_volume"],
-bid2=alternativeStock["bid2"],
-bid2_volume=alternativeStock["bid2_volume"],
-bid3=alternativeStock["bid3"],
-bid3_volume=alternativeStock["bid3_volume"],
-bid4=alternativeStock["bid4"],
-bid4_volume=alternativeStock["bid4_volume"],
-bid5=alternativeStock["bid5"],
-bid5_volume=alternativeStock["bid5_volume"],
-date=datetime.datetime.now().strftime('%Y%m%d'),
-time=alternativeStock["datetime"],
-timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-)
-result = alternativeStockPoolService.insert(alternativeStockPool)
-# #################################################################################
+
 
 # 启动买卖操作线程
 # TODOedd

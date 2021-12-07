@@ -141,10 +141,10 @@ class AlternativeStockPool:
 
     """构造方法"""
 
-    def __init__(self, stock_code, stock_name, buy, sell, now, open, close, high, low, turnover, volume, ask1,
-                 ask1_volume, ask2, ask2_volume, ask3, ask3_volume, ask4, ask4_volume, ask5, ask5_volume, bid1,
-                 bid1_volume, bid2, bid2_volume, bid3, bid3_volume, bid4, bid4_volume, bid5, bid5_volume, date, time,
-                 timestamp):
+    def __init__(self, stock_code, stock_name=None, buy=None, sell=None, now=None, open=None, close=None, high=None, low=None, turnover=None, volume=None, ask1=None,
+                 ask1_volume=None, ask2=None, ask2_volume=None, ask3=None, ask3_volume=None, ask4=None, ask4_volume=None, ask5=None, ask5_volume=None, bid1=None,
+                 bid1_volume=None, bid2=None, bid2_volume=None, bid3=None, bid3_volume=None, bid4=None, bid4_volume=None, bid5=None, bid5_volume=None, date=None, time=None,
+                 timestamp=None):
         self.stock_code = stock_code
         self.stock_name = stock_name
         self.buy = buy
