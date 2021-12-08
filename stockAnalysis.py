@@ -9,8 +9,6 @@ import matplotlib.pyplot as plt
 from pyecharts import options as opts
 from pyecharts.charts import Bar, Grid, Line
 
-from selenium import webdriver
-
 import easyquotation
 # from dbUtil import mysqlUtil
 from time import strftime, localtime
@@ -21,12 +19,15 @@ from util import tushareUtil
 quotation = easyquotation.use('sina')  # 新浪 ['sina'] 腾讯 ['tencent', 'qq']
 
 # 分析历史时长
-dayCount = 120
+dayCount = 360
 
 startTime = localtime()
 now = datetime.datetime.now()
 today = now.strftime('%Y%m%d')
 delta = datetime.timedelta(days=1)
+# 如果今天是周一，则自动取得上周五的日期
+if(now.weekday()==0):
+    delta = datetime.timedelta(days=3)
 yesterday = (now - delta).strftime('%Y%m%d')
 
 # 初始化过去60天的全部交易数据
@@ -39,7 +40,7 @@ if allStockHistoryDict is None:
     allStockHistoryDict = tushareUtil.get_all_history(ig507Util.get_main_stock_list_from_ig507(), start, end)
     # 将该对象写入到本地，下次启动时可以直接进行读取
     stockUtil.save_history_60(allStockHistoryDict)
-log.info("60天交易数据初始化完成!")
+log.info("历史交易数据初始化完成!")
 
 # 存放分析结果
 analysisResult = {}
@@ -296,6 +297,6 @@ grid = (
     Grid(init_opts=opts.InitOpts(width=str(30*dayCount)+'px',height='900px'))
     .add(bar, grid_opts=opts.GridOpts(pos_bottom="60%"))
     .add(line, grid_opts=opts.GridOpts(pos_top="60%"))
-    .render('涨停趋势分析.html')
+    .render('涨停趋势分析'+today+'.html')
 )
 

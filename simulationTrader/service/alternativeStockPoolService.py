@@ -4,7 +4,7 @@ from util import mysqlUtil
 def getAll():
     # 定义要执行的SQL语句
     sql = """
-          select * from alternative
+          select * from alternative_stock_pool
           """
     # 取到查询结果
     result = mysqlUtil.query(sql)

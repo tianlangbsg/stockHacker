@@ -76,8 +76,8 @@ def get_last_day_data(lastDay):
 # stockCodes:  000001.SZ,600000.SH,600001.SH
 def get_all_history(stockCodeList, startDate, endDate):
     allStockHistoryDict = {}
-    # 对stockCodeList进行个数变换，切割为单个size为100的小数组
-    stockCodeListList = stockUtil.list_split(stockCodeList, 100)
+    # 对stockCodeList进行个数变换，切割为单个size为20的小数组
+    stockCodeListList = stockUtil.list_split(stockCodeList, 20)
     # 遍历所有的list
     for list in stockCodeListList:
         # 转换成适合直接调用的str参数

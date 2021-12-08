@@ -13,7 +13,7 @@ class TradeRecord:
     TRADE_PRICE = "TRADE_PRICE"
     # 交易数量
     TRADE_AMOUNT = "TRADE_AMOUNT"
-    # 交易日期
+    # 交易时间
     TIMESTAMP = "TIMESTAMP"
 
     """成员变量"""

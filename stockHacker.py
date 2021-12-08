@@ -150,7 +150,7 @@ def select_target_from_top100():
     global candidateList
     while True:
         try:
-            time.sleep(2)
+            time.sleep(1)
             for key in stockRank100Dict.keys():
 
                 # 取出单只股票实时数据
@@ -220,7 +220,6 @@ def select_target_from_top100():
                     timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
                 )
                 result = alternativeStockPoolService.insert(alternativeStockPool)
-                log.info('result = ' + str(result))
                 # #################################################################################
             log.info('********************************************************************')
             log.info(candidateList.keys())
@@ -242,15 +241,15 @@ startTime = localtime()
 now = datetime.datetime.now()
 today = now.strftime('%Y%m%d')
 delta = datetime.timedelta(days=1)
+# 如果今天是周一，则自动取得上周五的日期
+if(now.weekday()==0):
+    delta = datetime.timedelta(days=3)
 yesterday = (now - delta).strftime('%Y%m%d')
 
 # 查询当前所有正常上市交易的股票列表ig507
 stockCodeList = ig507Util.get_main_stock_list_from_ig507()
 
 # 取得所有主板股票上个交易日的信息，并保存到stockHistoryDict
-# #####################
-yesterday = '20211203'
-# #####################
 log.info("初始化上个交易日数据...")
 stockHistoryDict = stockUtil.get_history_1(yesterday)
 if stockHistoryDict is None:
