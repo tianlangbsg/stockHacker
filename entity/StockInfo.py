@@ -1,4 +1,4 @@
-class TradeRecord:
+class StockInfo:
 
     """数据库字段名常量"""
     # 股票代码

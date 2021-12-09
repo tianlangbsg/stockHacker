@@ -220,6 +220,7 @@ def select_target_from_top100():
                     timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
                 )
                 result = alternativeStockPoolService.insert(alternativeStockPool)
+
                 # #################################################################################
             log.info('********************************************************************')
             log.info(candidateList.keys())
@@ -259,7 +260,7 @@ if stockHistoryDict is None:
 log.info("上个交易日数据初始化完成!")
 
 # 查询主板所有股票过去60个交易日的全部日线信息
-log.info("初始化过去60天交易数据...")
+log.info("初始化历史k线交易数据...")
 end = today
 delta = datetime.timedelta(days=60)
 start = (now - delta).strftime('%Y%m%d')
@@ -269,7 +270,7 @@ if allStockHistoryDict is None:
     allStockHistoryDict = tushareUtil.get_all_history(ig507Util.get_main_stock_list_from_ig507(), start, end)
     # 将该对象写入到本地，下次启动时可以直接进行读取
     stockUtil.save_history_60(allStockHistoryDict)
-log.info("60天交易数据初始化完成!")
+log.info("历史k线交易数据初始化完成!")
 
 # 初始化今日全部实时行情
 # 切割成固定大小的子数组
