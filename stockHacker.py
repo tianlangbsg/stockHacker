@@ -128,7 +128,7 @@ def refresh_real_info(stockCodeListList):
             refreshTime = datetime.datetime.now()
             time.sleep(60)
         except Exception as e:
-            log.info('全行情刷新失败:' + e)
+            log.info('全行情刷新失败:' + e.__str__())
 
 
 # 定时任务，刷新接近涨停的前100个股票最新情况
@@ -225,7 +225,7 @@ def select_target_from_top100():
             log.info(candidateList.keys())
             log.info('********************************************************************')
         except Exception as e:
-            log.info('选股失败' + e)
+            log.info('选股失败' + e.__str__())
 
             # TODO
 
