@@ -225,7 +225,7 @@ def select_target_from_top100():
             log.info(candidateList.keys())
             log.info('********************************************************************')
         except Exception as e:
-            log.info('选股失败' + e.__str__())
+            log.info('选股失败:' + e.__str__())
 
             # TODO
 
