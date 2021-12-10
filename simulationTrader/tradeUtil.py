@@ -5,22 +5,19 @@ from simulationTrader.service import tradeRecordService
 
 def buyStock(stockData):
     # 查询当日是否已经购买该票
-    todayTradeRecords = tradeRecordService.getByDate(datetime.datetime.now().strftime('%Y%m%d'))
+    todayTradeRecords = tradeRecordService.getBuyRecords(datetime.datetime.now().strftime('%Y%m%d'),stockData.stock_code)
 
-    # TODO
-    if todayTradeRecords.__contains__('000001'):
-        print('a')
+    # 模拟买入股票
+    if todayTradeRecords.__len__() > 0:
+        return 0
 
-    # 买入股票测试
     tradeRecord = TradeRecord(
-        stock_code='000892',
-        stock_name='20211209',
-        detail='',
-        trade_price='',
-        trade_amount='',
+        stock_code=stockData.stock_code,
+        stock_name=stockData.stock_name,
+        detail=stockData.bid1_volume,
+        trade_type='buy',
+        trade_price=stockData.now,
+        trade_amount=100,
         timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
     )
-    tradeRecordService.insert(tradeRecord)
-
-
-buyStock(None)
+    return tradeRecordService.insert(tradeRecord)

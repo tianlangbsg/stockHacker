@@ -10,6 +10,7 @@ from time import strftime, localtime
 
 from entity.AlternativeStockPool import AlternativeStockPool
 from simulationTrader.service import alternativeStockPoolService
+from simulationTrader.tradeUtil import buyStock
 from util import stockUtil
 from util import ig507Util
 from util import tushareUtil
@@ -219,7 +220,10 @@ def select_target_from_top100():
                     time=alternativeStock["datetime"],
                     timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
                 )
-                result = alternativeStockPoolService.insert(alternativeStockPool)
+                # 插入选股记录
+                alternativeStockPoolService.insert(alternativeStockPool)
+                # 插入购买记录
+                buyStock(alternativeStockPool)
 
                 # #################################################################################
             log.info('********************************************************************')
@@ -227,8 +231,6 @@ def select_target_from_top100():
             log.info('********************************************************************')
         except Exception as e:
             log.info('选股失败:' + e.__str__())
-
-            # TODO
 
 
 # *************************************************************************************
