@@ -1,0 +1,16 @@
+from entity.AccountStatus import AccountStatus
+from simulationTrader.service import accountStatusService
+
+accountStatus = AccountStatus(
+    day="20211211",
+    total_assets="9999",
+    fund_balance="9999",
+    stock_market_value="9999",
+    day_profit_loss="9999",
+    day_profit_loss_ratio="9999",
+    available_amount="9999",
+    position_profit_loss="9999",
+    frozen_amount="9999",
+    withdrawable_amount="99999",
+)
+print(accountStatusService.insert(accountStatus))
