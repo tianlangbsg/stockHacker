@@ -19,7 +19,7 @@ from util import tushareUtil
 quotation = easyquotation.use('sina')  # 新浪 ['sina'] 腾讯 ['tencent', 'qq']
 
 # 分析历史时长
-dayCount = 360
+dayCount = 120
 
 startTime = localtime()
 now = datetime.datetime.now()

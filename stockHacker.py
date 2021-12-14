@@ -233,6 +233,27 @@ def select_target_from_top100():
             log.info('选股失败:' + e.__str__())
 
 
+# 定时任务，自动执行买卖操作 TODO
+def auto_buy_and_sell():
+    global stockRealDict
+    global stockRankDict
+    global stockRankList
+    global stockRank100List
+
+    # 获取最新分时价格数据
+    while True:
+        try:
+            refreshTime = datetime.datetime.now()
+            # 更新数据键值对
+            get_all_real_and_save(stockCodeListList)
+            # log.info('全行情API获取耗时' + format((datetime.datetime.now() - refreshTime).total_seconds(), '.3f') + 'S')
+            sort_stock_rank100()
+            log.info('全行情刷新耗时' + format((datetime.datetime.now() - refreshTime).total_seconds(), '.3f') + 'S')
+            refreshTime = datetime.datetime.now()
+            time.sleep(60)
+        except Exception as e:
+            log.info('全行情刷新失败:' + e.__str__())
+
 # *************************************************************************************
 # *************************************************************************************
 
@@ -296,14 +317,14 @@ refreshTop100Thread = threading.Thread(target=refresh_top100_info)
 refreshTop100Thread.start()
 
 # 启动top100选择操作目标线程
-time.sleep(5)  # 等待实时数据初始化完成
 log.info("启动top100选择操作目标线程...")
 selectTargetThread = threading.Thread(target=select_target_from_top100())
 selectTargetThread.start()
 
-
-
 # 启动买卖操作线程
-# TODOedd
+# log.info("启动买卖操作目标线程...")
+# autoTradeThread = threading.Thread(target=auto_trade())
+# autoTradeThread.start()
+
 
 log.info("系统初始化完成")

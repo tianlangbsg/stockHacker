@@ -20,6 +20,14 @@ def getByDate(date):
     return result
 
 
+# 查询指定日期全部股票
+def getStocksByDate(date, tradeType):
+    # 定义要执行的SQL语句
+    sql = "SELECT stock_code FROM trade_record WHERE trade_type='"+tradeType+"' AND DATE_FORMAT(timestamp, '%Y%m%d')='"+date+"' AND DATE_FORMAT(timestamp, '%H:%i:%S')<'14:57:00';"
+    # 取到查询结果
+    result = mysqlUtil.query(sql)
+    return result
+
 # 查询指定日期是否存在指定股票的交易记录 buy
 def getBuyRecords(date, stockCode):
     # 定义要执行的SQL语句
