@@ -12,6 +12,16 @@ def getAll():
     return result
 
 
+# 查询指定日期全部股票
+def getStocksByDate(date):
+    # 定义要执行的SQL语句
+    sql = "SELECT DISTINCT stock_code FROM alternative_stock_pool WHERE DATE_FORMAT(timestamp, '%Y%m%d')='"+date+"' AND DATE_FORMAT(timestamp, '%H:%i:%S')<'14:57:00';"
+    # 取到查询结果
+    result = mysqlUtil.query(sql)
+    return result
+
+
+
 def insert(alternativeStockPool):
     # 定义要执行的SQL语句
     sql = 'insert into alternative_stock_pool (stock_code,stock_name,buy,sell,now,open,close,high,low,turnover,volume,ask1,ask1_volume,ask2,ask2_volume,ask3,ask3_volume,ask4,ask4_volume,ask5,ask5_volume,bid1,bid1_volume,bid2,bid2_volume,bid3,bid3_volume,bid4,bid4_volume,bid5,bid5_volume,date,time,timestamp) ' \

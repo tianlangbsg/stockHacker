@@ -3,18 +3,20 @@ from pyecharts import options as opts
 from pyecharts.charts import Bar, Grid, Line
 
 
-from simulationTrader.service import tradeRecordService
+from simulationTrader.service import tradeRecordService, alternativeStockPoolService
 from util import stockUtil
 from util import tushareUtil
-
-# 开始日期
 from util.commonUtil import get_root_path
 
-startDate = "20211213"
+# 开始日期
+startDate = "20211216"
 # 结束日期
-endDate = "20211216"
+endDate = "20211217"
 # 指定开始日期，取得该天买入的证券
+# 标准买入
 codeList = tradeRecordService.getStocksByDate(startDate, "buy")
+# 20211210前买入
+# codeList = alternativeStockPoolService.getStocksByDate(startDate)
 stocklist = []
 for stockCode in codeList:
     stocklist.append(stockUtil.get_complete_stock_code(stockCode[0]))
@@ -42,6 +44,9 @@ for stockCode in allStockHistoryDict.keys():
 tradeDateList = sorted(tradeDateDict.keys(), reverse=False)
 tradeDateList.remove(startDate)
 
+# 总资产
+totalAssets = 10000 * allStockHistoryDict.keys().__len__()
+
 # 遍历所有数据，计算利润和利润率
 for tradeDate in tradeDateList:
     endDate = tradeDate
@@ -64,24 +69,39 @@ for tradeDate in tradeDateList:
             high_profit_sum_rate += (allStockHistoryDict[stockCode][endDate]['high']-allStockHistoryDict[stockCode][startDate]['high'])/allStockHistoryDict[stockCode][startDate]['high']
             low_profit_sum_rate += (allStockHistoryDict[stockCode][endDate]['low']-allStockHistoryDict[stockCode][startDate]['high'])/allStockHistoryDict[stockCode][startDate]['high']
             close_profit_sum_rate += (allStockHistoryDict[stockCode][endDate]['close']-allStockHistoryDict[stockCode][startDate]['high'])/allStockHistoryDict[stockCode][startDate]['high']
-            # 利润
-            open_profit_sum += (allStockHistoryDict[stockCode][endDate]['open']-allStockHistoryDict[stockCode][startDate]['high'])*100
-            high_profit_sum += (allStockHistoryDict[stockCode][endDate]['high']-allStockHistoryDict[stockCode][startDate]['high'])*100
-            low_profit_sum += (allStockHistoryDict[stockCode][endDate]['low']-allStockHistoryDict[stockCode][startDate]['high'])*100
-            close_profit_sum += (allStockHistoryDict[stockCode][endDate]['close']-allStockHistoryDict[stockCode][startDate]['high'])*100
+            # 实际手数利润
+            # open_profit_sum += (allStockHistoryDict[stockCode][endDate]['open']-allStockHistoryDict[stockCode][startDate]['high'])*100
+            # high_profit_sum += (allStockHistoryDict[stockCode][endDate]['high']-allStockHistoryDict[stockCode][startDate]['high'])*100
+            # low_profit_sum += (allStockHistoryDict[stockCode][endDate]['low']-allStockHistoryDict[stockCode][startDate]['high'])*100
+            # close_profit_sum += (allStockHistoryDict[stockCode][endDate]['close']-allStockHistoryDict[stockCode][startDate]['high'])*100
+            # 平均金额利润，金额10000
+            open_profit_sum += 10000 * (allStockHistoryDict[stockCode][endDate]['open']-allStockHistoryDict[stockCode][startDate]['high'])/allStockHistoryDict[stockCode][startDate]['high']
+            high_profit_sum += 10000 * (allStockHistoryDict[stockCode][endDate]['high']-allStockHistoryDict[stockCode][startDate]['high'])/allStockHistoryDict[stockCode][startDate]['high']
+            low_profit_sum += 10000 * (allStockHistoryDict[stockCode][endDate]['low']-allStockHistoryDict[stockCode][startDate]['high'])/allStockHistoryDict[stockCode][startDate]['high']
+            close_profit_sum += 10000 * (allStockHistoryDict[stockCode][endDate]['close']-allStockHistoryDict[stockCode][startDate]['high'])/allStockHistoryDict[stockCode][startDate]['high']
         else:
             stop_count += 1
-    # 利润率
-    open_profit_rate_list.append(round(100*open_profit_sum_rate/allStockHistoryDict.keys().__len__(),2))
-    high_profit_rate_list.append(round(100*high_profit_sum_rate/allStockHistoryDict.keys().__len__(),2))
-    low_profit_rate_list.append(round(100*low_profit_sum_rate/allStockHistoryDict.keys().__len__(),2))
-    close_profit_rate_list.append(round(100*close_profit_sum_rate/allStockHistoryDict.keys().__len__(),2))
+
     # 利润
     open_profit_sum_list.append(round(open_profit_sum,2))
     high_profit_sum_list.append(round(high_profit_sum,2))
     low_profit_sum_list.append(round(low_profit_sum,2))
     close_profit_sum_list.append(round(close_profit_sum,2))
+    # 利润率
+    # open_profit_rate_list.append(round(100*open_profit_sum_rate/allStockHistoryDict.keys().__len__(),2))
+    # high_profit_rate_list.append(round(100*high_profit_sum_rate/allStockHistoryDict.keys().__len__(),2))
+    # low_profit_rate_list.append(round(100*low_profit_sum_rate/allStockHistoryDict.keys().__len__(),2))
+    # close_profit_rate_list.append(round(100*close_profit_sum_rate/allStockHistoryDict.keys().__len__(),2))
+    open_profit_rate_list.append(round(100*open_profit_sum/totalAssets,2))
+    high_profit_rate_list.append(round(100*high_profit_sum/totalAssets,2))
+    low_profit_rate_list.append(round(100*low_profit_sum/totalAssets,2))
+    close_profit_rate_list.append(round(100*close_profit_sum/totalAssets,2))
 
+print("初始金额:" + str(totalAssets))
+print("open结算金额:" + str(round(totalAssets+open_profit_sum,2)))
+print("high结算金额:" + str(round(totalAssets+high_profit_sum,2)))
+print("low结算金额:" + str(round(totalAssets+low_profit_sum,2)))
+print("close结算金额:" + str(round(totalAssets+close_profit_sum,2)))
 
 bar = (
     Bar(init_opts=opts.InitOpts(width='1800px',height='900px'))
