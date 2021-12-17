@@ -15,6 +15,7 @@ from time import strftime, localtime
 from util import stockUtil
 from util import ig507Util
 from util import tushareUtil
+from util.commonUtil import get_root_path
 
 quotation = easyquotation.use('sina')  # 新浪 ['sina'] 腾讯 ['tencent', 'qq']
 
@@ -293,10 +294,12 @@ line = (
     )
 )
 
+filePath = get_root_path() + "\\data\\analysis\\涨停趋势分析"+today+".html";
+
 grid = (
     Grid(init_opts=opts.InitOpts(width=str(30*dayCount)+'px',height='900px'))
     .add(bar, grid_opts=opts.GridOpts(pos_bottom="60%"))
     .add(line, grid_opts=opts.GridOpts(pos_top="60%"))
-    .render('涨停趋势分析'+today+'.html')
+    .render(filePath)
 )
 
