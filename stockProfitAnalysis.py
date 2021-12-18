@@ -130,8 +130,11 @@ line = (
 
 filePath = get_root_path() + "\\data\\analysis\\涨停利润趋势分析"+startDate+".html";
 
+
+dateCount = tradeDateList.__len__()+1
+
 grid = (
-    Grid(init_opts=opts.InitOpts(width='1800px',height='900px'))
+    Grid(init_opts=opts.InitOpts(width=str(dateCount*300)+'px',height='900px',page_title=startDate+'涨停利润趋势分析'))
     .add(bar, grid_opts=opts.GridOpts(pos_bottom="60%"))
     .add(line, grid_opts=opts.GridOpts(pos_top="60%"))
     .render(filePath)
