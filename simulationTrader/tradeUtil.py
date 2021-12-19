@@ -3,7 +3,7 @@ from entity.TradeRecord import TradeRecord
 from simulationTrader.service import tradeRecordService
 
 
-def buyStock(stockData):
+def buyStock(stockData, buyAmount):
     # 查询当日是否已经购买该票
     todayTradeRecords = tradeRecordService.getBuyRecords(datetime.datetime.now().strftime('%Y%m%d'),stockData.stock_code)
 
@@ -17,7 +17,7 @@ def buyStock(stockData):
         detail=stockData.bid1_volume,
         trade_type='buy',
         trade_price=stockData.now,
-        trade_amount=100,
+        trade_amount=buyAmount,
         timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
     )
     return tradeRecordService.insert(tradeRecord)

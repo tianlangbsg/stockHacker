@@ -222,8 +222,10 @@ def select_target_from_top100():
                 )
                 # 插入选股记录
                 alternativeStockPoolService.insert(alternativeStockPool)
+                # 计算买入数量（最大不超过1W）
+                buyAmount = int((10000/alternativeStockPool.now)/100)*100
                 # 插入购买记录
-                buyStock(alternativeStockPool)
+                buyStock(alternativeStockPool,buyAmount)
 
                 # #################################################################################
             log.info('********************************************************************')
