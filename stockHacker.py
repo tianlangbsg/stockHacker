@@ -222,10 +222,13 @@ def select_target_from_top100():
                 )
                 # 插入选股记录
                 alternativeStockPoolService.insert(alternativeStockPool)
-                # 计算买入数量（最大不超过1W）
-                buyAmount = int((10000/alternativeStockPool.now)/100)*100
-                # 插入购买记录
-                buyStock(alternativeStockPool,buyAmount)
+                # 判断是否在交易时间范围内
+                currentTime = datetime.datetime.now().strftime('%H%M%S')
+                if("093000" < currentTime < "113000") or ("130000" < currentTime < "150000"):
+                    # 计算买入数量（最大不超过1W）
+                    buyAmount = int((10000/alternativeStockPool.now)/100)*100
+                    # 插入购买记录
+                    buyStock(alternativeStockPool,buyAmount)
 
                 # #################################################################################
             log.info('********************************************************************')
