@@ -83,7 +83,7 @@ def get_all_history(stockCodeList, startDate, endDate):
         # 转换成适合直接调用的str参数
         listStr = ''
         for data in list:
-            listStr = listStr + stockUtil.format_stock_code_suffix(data) + ','
+            listStr = listStr + stockUtil.format_stock_code_suffix(stockUtil.get_complete_stock_code(data)) + ','
         # 传入参数
         df = tspro.query('daily', ts_code=listStr, start_date=startDate, end_date=endDate)
         dfList = [tuple(x) for x in df.values]
@@ -108,3 +108,35 @@ def get_all_history(stockCodeList, startDate, endDate):
             allStockHistoryDict[stockCode][tradeDate] = stockData
 
     return allStockHistoryDict
+
+
+# 获取指定时间段的指数数据日k dict
+# stockCodes:  000001.SH,399001.SZ
+def get_index_history(startDate, endDate):
+    allStockHistoryDict = {}
+    listStr = "000001.SH,399001.SZ"
+    # 传入参数
+    df = tspro.index_daily('daily', ts_code=listStr, start_date=startDate, end_date=endDate)
+    dfList = [tuple(x) for x in df.values]
+    # 用字典形式存储全部历史交易数据,key=stock_code
+    for dataSet in dfList:
+        stockData = {}
+        stockCode = stockData['ts_code'] = dataSet[0][0:6]
+        tradeDate = stockData['trade_date'] = dataSet[1]
+        stockData['open'] = dataSet[2]
+        stockData['high'] = dataSet[3]
+        stockData['low'] = dataSet[4]
+        stockData['close'] = dataSet[5]
+        stockData['pre_close'] = dataSet[6]
+        stockData['change'] = dataSet[7]
+        stockData['pct_chg'] = dataSet[8]
+        stockData['vol'] = dataSet[9]
+        stockData['amount'] = dataSet[10]
+        stockData['limit_high'] = stockUtil.calc_price_limit_high(dataSet[6])
+        stockData['limit_low'] = stockUtil.calc_price_limit_low(dataSet[6])
+        if not allStockHistoryDict.keys().__contains__(stockCode):
+            allStockHistoryDict[stockCode] = {}
+        allStockHistoryDict[stockCode][tradeDate] = stockData
+
+    return allStockHistoryDict
+
