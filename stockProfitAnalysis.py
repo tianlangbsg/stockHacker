@@ -126,10 +126,12 @@ def calcProfit(startDate, endDate):
     print("**************************************************************")
     print(startDate)
     print("初始金额:" + str(totalAssets))
+    print("买入数量:" + str(stocklist.__len__()))
     print("open结算金额:" + str(round(totalAssets+open_profit_sum,2)))
     print("high结算金额:" + str(round(totalAssets+high_profit_sum,2)))
     print("low结算金额:" + str(round(totalAssets+low_profit_sum,2)))
     print("close结算金额:" + str(round(totalAssets+close_profit_sum,2)))
+
 
     # 实例化page类
     # page = Page(layout=Page.DraggablePageLayout, page_title='打板分析')
@@ -184,10 +186,10 @@ def calcProfit(startDate, endDate):
 
     # 添加个股K线图
     xaxisList = preTradeDateList.copy()
-    xaxisList[xaxisList.index(startDate)] = startDate + '_B' # 标记买入当天日期
+    xaxisList[xaxisList.index(startDate)] = startDate + '★★' # 标记买入当天日期
     for key in candlestickListDict.keys():
         candleStick = (
-            Kline()
+            Kline(init_opts=opts.InitOpts(width='1800px',height='600px'))
                 .add_xaxis(xaxisList)
                 .add_yaxis("price", candlestickListDict[key])
                 .set_global_opts(
@@ -239,40 +241,14 @@ def calcProfit(startDate, endDate):
     page.render(filePath)
 
 
-    # # grid = (
-    # #     Grid(init_opts=opts.InitOpts(width=str(dateCount*300)+'px',height='900px',page_title=startDate+'涨停利润趋势分析'))
-    # #     .add(profit_bar, grid_opts=opts.GridOpts(pos_bottom="60%"))
-    # #     .add(profit_rate_line, grid_opts=opts.GridOpts(pos_top="60%"))
-    # #     .render(filePath)
-    # # )
-    #
-    # grid = Grid(init_opts=opts.InitOpts(width=str(dateCount*300)+'px',height='900px',page_title=startDate+'涨停利润趋势分析'))
-    # grid.add(profit_bar, grid_opts=opts.GridOpts(pos_bottom="60%"))
-    # grid.add(profit_rate_line, grid_opts=opts.GridOpts(pos_top="60%"))
-    # # 添加K线图
-    # # for key in candlestickListDict.keys():
-    # #     candleStick = (
-    # #         Kline()
-    # #             .add_xaxis(tradeDateList)
-    # #             .add_yaxis("kline", candlestickListDict[key])
-    # #             .set_global_opts(
-    # #             yaxis_opts=opts.AxisOpts(is_scale=True),
-    # #             xaxis_opts=opts.AxisOpts(is_scale=True),
-    # #             title_opts=opts.TitleOpts(title=key),
-    # #         )
-    # #     )
-    # #     grid.add(candleStick, grid_opts=opts.GridOpts(pos_top="60%"))
-    # # 渲染
-    # grid.render(filePath)
-
-
 if __name__ == '__main__':
     # 开始日期
     startDateList = ["20211220","20211221",
                      "20211222","20211223","20211224","20211227","20211228","20211229","20211230",
-                     "20211231", "20220104", "20220105", "20220106", "20220107"
+                     "20211231", "20220104", "20220105", "20220106", "20220107", "20220110", "20220111", "20220112",
+                     "20220113","20220114","20220117","20220118","20220119"
                      ]
     # 结束日期
-    endDate = "20220110"
+    endDate = "20220120"
     for startDate in startDateList:
         calcProfit(startDate, endDate)
