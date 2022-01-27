@@ -8,10 +8,12 @@ from util import tushareUtil
 from util.commonUtil import get_root_path
 
 # 取得所有主板股票代码名称
+from util.pyecharts import professionalKlineChart
+
 stockInfoDict = ig507Util.get_main_stock_dict_from_ig507()
 
-
-def calcProfit(startDate, endDate):
+# 回溯开始时间，交易开始日期，结束日期
+def calcProfit(historyStart, startDate, endDate):
     # 指定开始日期，取得该天买入的证券
     # 标准买入
     tradeRecordDict = tradeRecordService.getByDate(startDate)
@@ -21,10 +23,9 @@ def calcProfit(startDate, endDate):
     stocklist = sorted(stocklist, reverse=False)
 
     # 证券历史数据集
-    allStockHistoryDict = tushareUtil.get_all_history(stocklist, startDate, endDate)
-    allStockPreHistoryDict = tushareUtil.get_all_history(stocklist, '20211101', endDate)
-    # 指数历史数据集
-    # indexHistoryDict = tushareUtil.get_index_history( startDate, endDate)
+    # indexHistoryDict = tushareUtil.get_index_history(historyStart, endDate) # 沪深指数
+    allStockHistoryDict = tushareUtil.get_all_history(stocklist, startDate, endDate) # 交易日开始
+    allStockPreHistoryDict = tushareUtil.get_all_history(stocklist, historyStart, endDate) # 交易日前
 
     # 利润率
     open_profit_rate_list = []
@@ -167,58 +168,65 @@ def calcProfit(startDate, endDate):
     )
     page.add(profit_rate_line)
 
-    # 个股K线图
+    # 添加个股K线图
     candlestickListDict = {}
     for stockCode in stocklist:
         candlestickList = []
         stockData = allStockPreHistoryDict[stockCode]
-        # 取得该股的所有日期数据
-        preData = [0, 0, 0, 0]  # 上一天的交易数据，当后一天停牌时使用
-        for date in preTradeDateList:
-            data = [0, 0, 0, 0]
-            if allStockPreHistoryDict[stockCode].keys().__contains__(date):
-                data = [stockData[date]['open'],stockData[date]['close'],stockData[date]['low'],stockData[date]['high']]
-                preData = data
-            else:
-                data = [preData[1],preData[1],preData[1],preData[1]]
-            candlestickList.append(data)
-        candlestickListDict[stockCode] = candlestickList
-
-    # 添加个股K线图
-    xaxisList = preTradeDateList.copy()
-    xaxisList[xaxisList.index(startDate)] = startDate + '★★' # 标记买入当天日期
-    for key in candlestickListDict.keys():
-        candleStick = (
-            Kline(init_opts=opts.InitOpts(width='1800px',height='600px'))
-                .add_xaxis(xaxisList)
-                .add_yaxis("price", candlestickListDict[key])
-                .set_global_opts(
-                title_opts=opts.TitleOpts(title=stockInfoDict[key]),
-                # legend_opts=opts.LegendOpts(pos_top="48%"),
-                xaxis_opts=opts.AxisOpts(name="日期", axislabel_opts={"rotate": 45},
-                                         splitline_opts=opts.SplitLineOpts(is_show=True), ),
-                yaxis_opts=opts.AxisOpts(name="日期",  splitline_opts=opts.SplitLineOpts(is_show=True), ),
-            )
-        )
+        candleStick = professionalKlineChart.draw_kline(stockInfoDict[stockCode], stockData, startDate)
         page.add(candleStick)
+
+    # # 个股K线图
+    # candlestickListDict = {}
+    # for stockCode in stocklist:
+    #     candlestickList = []
+    #     stockData = allStockPreHistoryDict[stockCode]
+    #     # 取得该股的所有日期数据
+    #     preData = [0, 0, 0, 0]  # 上一天的交易数据，当后一天停牌时使用
+    #     for date in preTradeDateList:
+    #         data = [0, 0, 0, 0]
+    #         if allStockPreHistoryDict[stockCode].keys().__contains__(date):
+    #             data = [stockData[date]['open'],stockData[date]['close'],stockData[date]['low'],stockData[date]['high']]
+    #             preData = data
+    #         else:
+    #             data = [preData[1],preData[1],preData[1],preData[1]]
+    #         candlestickList.append(data)
+    #     candlestickListDict[stockCode] = candlestickList
+    #
+    # xaxisList = preTradeDateList.copy()
+    # xaxisList[xaxisList.index(startDate)] = startDate + '★★' # 标记买入当天日期
+    #
+    # # 添加个股K线图
+    # for key in candlestickListDict.keys():
+    #     candleStick = (
+    #         Kline(init_opts=opts.InitOpts(width='1800px',height='600px'))
+    #             .add_xaxis(xaxisList)
+    #             .add_yaxis("price", candlestickListDict[key])
+    #             .set_global_opts(
+    #             title_opts=opts.TitleOpts(title=stockInfoDict[key]),
+    #             # legend_opts=opts.LegendOpts(pos_top="48%"),
+    #             xaxis_opts=opts.AxisOpts(name="日期", axislabel_opts={"rotate": 45},
+    #                                      splitline_opts=opts.SplitLineOpts(is_show=True), ),
+    #             yaxis_opts=opts.AxisOpts(name="日期",  splitline_opts=opts.SplitLineOpts(is_show=True), ),
+    #         )
+    #     )
+    #     page.add(candleStick)
 
 
     # 指数K线图
-    # indexCandlestickListDict = {}
-    # for index in indexHistoryDict.keys():
-    #     candlestickList = []
-    #     indexData = indexHistoryDict[index]
-    #     # 取得所有日期数据
-    #     preData = [0, 0, 0, 0]  # 上一天的交易数据，当后一天停牌时使用
-    #     for date in tradeDateList:
-    #         data = [0, 0, 0, 0]
-    #         if indexHistoryDict[index].keys().__contains__(date):
-    #             data = [indexData[date]['open'],indexData[date]['close'],indexData[date]['low'],indexData[date]['high']]
-    #             preData = data
-    #         else:
-    #             data = preData
-    #         candlestickList.append(data)
-    #     indexCandlestickListDict[index] = candlestickList
+    # for key in indexHistoryDict.keys():
+    #     candleStick = (
+    #         Kline(init_opts=opts.InitOpts(width='1800px',height='600px'))
+    #             .add_xaxis(xaxisList)
+    #             .add_yaxis("price", candlestickListDict[key])
+    #             .set_global_opts(
+    #             title_opts=opts.TitleOpts(title="上证指数"),
+    #             xaxis_opts=opts.AxisOpts(name="日期", axislabel_opts={"rotate": 45},
+    #                                      splitline_opts=opts.SplitLineOpts(is_show=True), ),
+    #             yaxis_opts=opts.AxisOpts(name="日期",  splitline_opts=opts.SplitLineOpts(is_show=True), ),
+    #         )
+    #     )
+    #     page.add(candleStick)
 
     # 添加指数K线图
     # for key in indexCandlestickListDict.keys():
@@ -242,13 +250,15 @@ def calcProfit(startDate, endDate):
 
 
 if __name__ == '__main__':
-    # 开始日期
-    startDateList = ["20211220","20211221",
-                     "20211222","20211223","20211224","20211227","20211228","20211229","20211230",
-                     "20211231", "20220104", "20220105", "20220106", "20220107", "20220110", "20220111", "20220112",
-                     "20220113","20220114","20220117","20220118","20220119"
+    # 回溯开始日期
+    historyStart = "20211101"
+    # 交易开始日期
+    startDateList = [
+                     # "20211220","20211221", "20211222","20211223","20211224","20211227","20211228","20211229","20211230",
+                     # "20211231", "20220104", "20220105", "20220106", "20220107", "20220110", "20220111", "20220112",
+                     "20220113","20220114","20220117","20220118","20220119","20220120","20220121","20220124","20220125","20220126"
                      ]
     # 结束日期
-    endDate = "20220120"
+    endDate = "20220127"
     for startDate in startDateList:
-        calcProfit(startDate, endDate)
+        calcProfit(historyStart, startDate, endDate)

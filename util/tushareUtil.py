@@ -7,6 +7,7 @@ from util import stockUtil
 
 # 初始化
 TUSHARE_TOKEN = configManager.get(section='tushare', option='tushare_token')
+tushare.set_token(TUSHARE_TOKEN)
 tspro = tushare.pro_api(TUSHARE_TOKEN)
 
 
@@ -113,10 +114,9 @@ def get_all_history(stockCodeList, startDate, endDate):
 # 获取指定时间段的指数数据日k dict
 # stockCodes:  000001.SH,399001.SZ
 def get_index_history(startDate, endDate):
-    allStockHistoryDict = {}
-    listStr = "000001.SH,399001.SZ"
-    # 传入参数
-    df = tspro.index_daily('daily', ts_code=listStr, start_date=startDate, end_date=endDate)
+    indexHistoryDict = {}
+    df = tushare.pro_bar(ts_code='000001.SH', asset='I', start_date=startDate, end_date=endDate)
+
     dfList = [tuple(x) for x in df.values]
     # 用字典形式存储全部历史交易数据,key=stock_code
     for dataSet in dfList:
@@ -134,9 +134,9 @@ def get_index_history(startDate, endDate):
         stockData['amount'] = dataSet[10]
         stockData['limit_high'] = stockUtil.calc_price_limit_high(dataSet[6])
         stockData['limit_low'] = stockUtil.calc_price_limit_low(dataSet[6])
-        if not allStockHistoryDict.keys().__contains__(stockCode):
-            allStockHistoryDict[stockCode] = {}
-        allStockHistoryDict[stockCode][tradeDate] = stockData
+        if not indexHistoryDict.keys().__contains__(stockCode):
+            indexHistoryDict[stockCode] = {}
+        indexHistoryDict[stockCode][tradeDate] = stockData
 
-    return allStockHistoryDict
+    return indexHistoryDict
 

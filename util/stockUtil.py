@@ -133,7 +133,7 @@ def get_price_increase_times(stockHistory60Data):
     highestPrice = get_highest_price(stockHistory60Data)
     lowestPrice = get_lowest_price(stockHistory60Data)
 
-    return highestPrice/lowestPrice
+    return highestPrice / lowestPrice
 
 
 # 判断日K期间内的最低量（默认除权）
@@ -163,17 +163,17 @@ def get_vol_increase_times(stockHistory60Data):
     highestVol = get_highest_vol(stockHistory60Data)
     lowestVol = get_lowest_vol(stockHistory60Data)
 
-    return float(highestVol/lowestVol)
+    return float(highestVol / lowestVol)
 
 
 # 判断当前股票当日内炸板幅度
 def calc_explosion_range(stockData):
     limit_high = float(stockData['limit_high'])
     close = float(stockData['close'])
-    return round(100 * (close - limit_high)/limit_high, 2)
+    return round(100 * (close - limit_high) / limit_high, 2)
 
 
-# TODO 判断量能是否温和放量
+# 判断量能是否温和放量
 def is_moderate_volume(stockHistory60Data):
     # 最低成交量
     minVol = 0
@@ -181,6 +181,8 @@ def is_moderate_volume(stockHistory60Data):
     maxVol = 0
     # 平均成交量
     avgVol = 0
+    # 总成交量
+    totalVol = 0
 
     for date in stockHistory60Data.keys():
         curVol = stockHistory60Data[date]['vol']
@@ -188,12 +190,10 @@ def is_moderate_volume(stockHistory60Data):
             minVol = curVol
         if curVol > maxVol:
             maxVol = curVol
-        avgVol = avgVol + curVol
+        totalVol = totalVol + curVol
 
-    avgVol = avgVol / stockHistory60Data.keys().__len__()
+    avgVol = totalVol / stockHistory60Data.keys().__len__()
 
-    # 计算最近20个交易日最低量
-    lowestVolume = stockHistory60Data
-    # 计算最近20个交易日最高量
-    # 计算最近20个交易日平均量
-    return True
+    # 计算最近60个交易日最高量最低量倍数
+    volumeRate = maxVol / minVol
+    return volumeRate < 4

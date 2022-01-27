@@ -168,7 +168,6 @@ def select_target_from_top100():
                 # if not stockUtil.is_moderate_volume(stockHistory60Data):
                 #     continue
                 # TODO 判断过去n个交易日内，最高涨幅是否符合1.2倍-1.8倍的区间
-                # TODO 判断股票是否创新高
                 # TODO 判断当前股票当日内的开板次数
                 # TODO 判断当天价格是否是30日内的新高，如果不是，计算出与前高的差距
                 # TODO 判断板子上的封单数量是否满足，判断卖一是否金额小于500W
